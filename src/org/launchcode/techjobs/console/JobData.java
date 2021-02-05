@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LaunchCode
@@ -57,12 +58,12 @@ public class JobData {
     /**
      * Returns results of search the jobs data by key/value, using
      * inclusion of the search term.
-     * <p>
+     *
      * For example, searching for employer "Enterprise" will include results
      * with "Enterprise Holdings, Inc".
      *
-     * @param column Column that should be searched.
-     * @param value  Value of teh field to search for
+     * @param column   Column that should be searched.
+     * @param value Value of teh field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
@@ -76,13 +77,41 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
 
         return jobs;
     }
+
+
+    public static ArrayList<HashMap<String, String>> findByValue(String column, String value) {
+
+        // load data, if not already loaded
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (int i = 0; i < allJobs.size(); i++) {
+
+            for (Map.Entry<String, String> row : allJobs.get(i).entrySet()) {
+                //HashMap<String, String> element = new HashMap<>();
+
+                String aValue = row.getValue();
+                String aKey = row.getKey();
+
+                //element.put(aKey, aValue);
+
+                if (aValue.toLowerCase().contains(value.toLowerCase())) {
+                    jobs.add(allJobs.get(i));
+                }
+            }
+        }
+        return jobs;
+    }
+
+
 
     /**
      * Read in data from a CSV file and store it in a list
@@ -125,24 +154,4 @@ public class JobData {
         }
     }
 
-    // Return the values based off a specific search term that user enters
-    public static ArrayList<HashMap<String, String>> findByValue(String searchTerm) {
-        // Loads the CSV file to loop though
-        loadData();
-        // Holds the jobs with the search term
-        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
-        // Loops thought all list
-        for (HashMap<String, String> row : allJobs) {
-            // Loop though everything contained in the dictionary
-            for (String fields : row.values()) {
-                //if the search term is contained
-                if (fields.toLowerCase().contains(searchTerm)) {
-                    jobs.add(row);
-                    break; // prevents duplicates from showing up in the array list
-                }
-            }
-        }
-        // Return the Array that contains jobs with thee search terms
-        return jobs;
-    }
 }
